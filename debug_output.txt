@@ -1,0 +1,10 @@
+--- Starting Auth Check ---
+Generated Auth URL: https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.events&prompt=consent&response_type=code&client_id=530492885534-lddgrfn5hsj1dr7fuv7it16mkjatlkt4.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Foauth2callback
+
+--- Current Configuration ---
+Redirect_URI_Sent_To_Google: http://localhost:3000/oauth2callback
+Client_ID_Sent_To_Google:    530492885534-lddgrfn5hsj1dr7fuv7it16mkjatlkt4.apps.googleusercontent.com
+
+--- Credentials File Check ---
+credentials.json exists at: C:\Users\HP\Desktop\server\credentials.json
+Client_ID_In_File:         530492885534-lddgrfn5hsj1dr7fuv7it16mkjatlkt4.apps.googleusercontent.com

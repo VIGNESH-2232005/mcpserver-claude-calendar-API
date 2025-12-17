@@ -22,5 +22,13 @@
     "name": "Vignesh",
     "role": "Engineer",
     "email": "vignesh@company.com"
+  },
+  {
+    "id": "rzm2vrg7f",
+    "name": "John Doe",
+    "role": "Sales Representative",
+    "email": "john.doe@company.com",
+    "phone": "555-1234",
+    "department": "Sales"
   }
 ]

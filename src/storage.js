@@ -1,74 +1,56 @@
-const fs = require('fs');
-const path = require('path');
-
-const DATA_DIR = path.join(__dirname, '../data');
-const DATA_FILE = path.join(DATA_DIR, 'employees.json');
-
-// Ensure data directory exists
-if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR);
-}
-
-function readData() {
-    if (!fs.existsSync(DATA_FILE)) {
-        return [];
-    }
-    const content = fs.readFileSync(DATA_FILE, 'utf-8');
-    try {
-        return JSON.parse(content);
-    } catch (e) {
-        return [];
-    }
-}
-
-function writeData(data) {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-}
+const API_BASE = 'http://localhost:3100/employees';
 
 async function listEmployees() {
-    return readData();
-}
-
-async function addEmployee({ name, role, email }) {
-    const employees = readData();
-    const id = Math.random().toString(36).substr(2, 9);
-    const newEmployee = { id, name, role, email };
-    employees.push(newEmployee);
-    writeData(employees);
-    return newEmployee;
-}
-
-async function updateEmployee(id, { name, role, email }) {
-    const employees = readData();
-    const index = employees.findIndex(e => e.id === id);
-    if (index === -1) {
-        throw new Error(`Employee with ID ${id} not found`);
+    const response = await fetch(API_BASE);
+    if (!response.ok) {
+        throw new Error(`Failed to list employees: ${response.statusText}`);
     }
+    return response.json();
+}
 
-    // Update only provided fields
-    const current = employees[index];
-    const updated = {
-        ...current,
-        name: name || current.name,
-        role: role || current.role,
-        email: email || current.email
-    };
+async function addEmployee({ name, role, email, phone, department }) {
+    const response = await fetch(API_BASE, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, role, email, phone, department }),
+    });
 
-    employees[index] = updated;
-    writeData(employees);
-    return updated;
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(`Failed to add employee: ${error.error || response.statusText}`);
+    }
+    return response.json();
+}
+
+async function updateEmployee(id, { name, role, email, phone, department }) {
+    const response = await fetch(`${API_BASE}/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, role, email, phone, department }),
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(`Failed to update employee: ${error.error || response.statusText}`);
+    }
+    return response.json();
 }
 
 async function deleteEmployee(id) {
-    const employees = readData();
-    const index = employees.findIndex(e => e.id === id);
-    if (index === -1) {
-        throw new Error(`Employee with ID ${id} not found`);
-    }
+    const response = await fetch(`${API_BASE}/${id}`, {
+        method: 'DELETE',
+    });
 
-    employees.splice(index, 1);
-    writeData(employees);
-    return { success: true, deletedId: id };
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(`Failed to delete employee: ${error.error || response.statusText}`);
+    }
+    return response.json();
 }
 
 module.exports = { listEmployees, addEmployee, updateEmployee, deleteEmployee };
+

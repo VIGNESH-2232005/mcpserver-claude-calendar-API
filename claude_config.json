@@ -1,0 +1,10 @@
+{
+    "mcpServers": {
+        "google-employees-link-auth": {
+            "command": "node",
+            "args": [
+                "c:\\Users\\HP\\Desktop\\server\\src\\index.js"
+            ]
+        }
+    }
+}
