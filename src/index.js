@@ -3,7 +3,7 @@ const { McpServer } = require('@modelcontextprotocol/sdk/server/mcp.js');
 const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio.js');
 const { z } = require('zod');
 const { startCallbackServer, getAuthUrl } = require('./auth');
-const { listEvents, createEvent } = require('./calendar');
+
 
 // Global state for auth
 let lastAuthenticatedUser = null;
@@ -26,58 +26,24 @@ async function checkAuth() {
     return null;
 }
 
-server.tool(
-    'list_events',
-    {
-        timeMin: z.string().optional().describe('ISO date string (default: now)'),
-        timeMax: z.string().optional().describe('ISO date string'),
-        maxResults: z.number().optional().default(10),
-    },
-    async ({ timeMin, timeMax, maxResults }) => {
-        const authError = await checkAuth();
-        if (authError) return authError;
+const { registerAclTools } = require('./tools/acl_tools');
+const { registerCalendarListTools } = require('./tools/calendar_list_tools');
+const { registerCalendarsTools } = require('./tools/calendars_tools');
+const { registerChannelsTools } = require('./tools/channels_tools');
+const { registerColorsTools } = require('./tools/colors_tools');
+const { registerEventsTools } = require('./tools/events_tools');
+const { registerFreebusyTools } = require('./tools/freebusy_tools');
+const { registerSettingsTools } = require('./tools/settings_tools');
 
-        try {
-            const events = await listEvents({ timeMin, timeMax, maxResults });
-            return {
-                content: [{ type: 'text', text: JSON.stringify(events, null, 2) }],
-            };
-        } catch (e) {
-            return {
-                content: [{ type: 'text', text: `Error: ${e.message}` }],
-                isError: true,
-            };
-        }
-    }
-);
+registerAclTools(server, checkAuth);
+registerCalendarListTools(server, checkAuth);
+registerCalendarsTools(server, checkAuth);
+registerChannelsTools(server, checkAuth);
+registerColorsTools(server, checkAuth);
+registerEventsTools(server, checkAuth);
+registerFreebusyTools(server, checkAuth);
+registerSettingsTools(server, checkAuth);
 
-server.tool(
-    'create_event',
-    {
-        summary: z.string(),
-        description: z.string().optional(),
-        start: z.string().describe('ISO date string (e.g., 2025-12-25T10:00:00)'),
-        end: z.string().describe('ISO date string'),
-        attendees: z.array(z.string().email()).optional(),
-        location: z.string().optional(),
-    },
-    async ({ summary, description, start, end, attendees, location }) => {
-        const authError = await checkAuth();
-        if (authError) return authError;
-
-        try {
-            const event = await createEvent({ summary, description, start, end, attendees, location });
-            return {
-                content: [{ type: 'text', text: `Event Created: ${event.htmlLink}` }],
-            };
-        } catch (e) {
-            return {
-                content: [{ type: 'text', text: `Error: ${e.message}` }],
-                isError: true,
-            };
-        }
-    }
-);
 
 // Start Server
 async function main() {

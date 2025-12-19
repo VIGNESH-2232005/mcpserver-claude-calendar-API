@@ -1,6 +1,6 @@
 {
     "mcpServers": {
-        "google-employees-link-auth": {
+        "google-calendar": {
             "command": "node",
             "args": [
                 "c:\\Users\\HP\\Desktop\\server\\src\\index.js"

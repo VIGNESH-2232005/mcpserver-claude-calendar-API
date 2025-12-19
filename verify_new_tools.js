@@ -1,4 +1,4 @@
-const { listCalendars, getFreeBusy, getColors } = require('./src/calendar');
+const { listCalendarList, queryFreeBusy, getColors } = require('./src/calendar');
 const { loadToken } = require('./src/auth');
 
 async function verify() {
@@ -13,8 +13,8 @@ async function verify() {
 
     try {
         // 1. List Calendars
-        console.log('\n[1/3] Testing listCalendars...');
-        const calendars = await listCalendars();
+        console.log('\n[1/3] Testing listCalendarList...');
+        const calendars = await listCalendarList();
         console.log(`Success! Found ${calendars.length} calendars.`);
         const primary = calendars.find(c => c.primary) || calendars[0];
 
@@ -24,15 +24,18 @@ async function verify() {
         console.log('Success! Retrieved color definitions.');
 
         // 3. Get Free/Busy
-        console.log('\n[3/3] Testing getFreeBusy...');
+        console.log('\n[3/3] Testing queryFreeBusy...');
         const now = new Date();
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
 
-        const freeBusy = await getFreeBusy({
-            timeMin: now.toISOString(),
-            timeMax: tomorrow.toISOString(),
-            items: [primary.id]
+        const freeBusy = await queryFreeBusy({
+            resource: {
+                timeMin: now.toISOString(),
+                timeMax: tomorrow.toISOString(),
+                timeZone: 'UTC',
+                items: [{ id: primary.id }]
+            }
         });
         console.log('Success! Retrieved free/busy info.');
         console.log('Calendar ID checked:', primary.id);
